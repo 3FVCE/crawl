@@ -681,15 +681,7 @@ static void _startup_hints_mode()
 {
     // Don't allow triggering at game start.
     Hints.hints_just_triggered = true;
-
-    msg::streams(MSGCH_TUTORIAL)
-        << "Press any key to start the hints mode intro, or Escape to skip it."
-        << endl;
-
-    flush_prev_message();
-    const int ch = getch_ck();
-    if (!key_is_escape(ch))
-        hints_starting_screen();
+    hints_starting_screen();
 }
 
 // required so that maybe_identify_base_type works correctly
@@ -818,7 +810,7 @@ static void _do_wizard_command(int wiz_command)
     // case 'U': break;
     case CONTROL('U'): debug_terp_dlua(clua); break;
 
-    case 'v': wizard_value_artefact(); break;
+    case 'v': wizard_value_item(); break;
     case 'V': wizard_toggle_xray_vision(); break;
     case 'E': wizard_freeze_time(); break;
     // case CONTROL('V'): break;
@@ -2809,10 +2801,8 @@ static void _swing_at_target(coord_def move)
         you.turn_is_over = true;
         fight_melee(&you, mon);
 
-        if (you.berserk_penalty != NO_BERSERK_PENALTY)
-            you.berserk_penalty = 0;
+        you.berserk_penalty = 0;
         you.apply_berserk_penalty = false;
-
         return;
     }
 
@@ -2855,14 +2845,6 @@ static void _open_door(coord_def move)
     {
         free_self_from_net();
         you.turn_is_over = true;
-        return;
-    }
-
-    // If we get here, the player either hasn't picked a direction yet,
-    // or the chosen direction actually contains a closed door.
-    if (!player_can_open_doors())
-    {
-        mpr("You can't open doors in your present form.");
         return;
     }
 
@@ -2956,12 +2938,6 @@ static void _open_door(coord_def move)
 
 static void _close_door(coord_def move)
 {
-    if (!player_can_open_doors())
-    {
-        mpr("You can't close doors in your present form.");
-        return;
-    }
-
     if (you.attribute[ATTR_HELD])
     {
         mprf("You can't close doors while %s.", held_status());
@@ -3040,9 +3016,6 @@ static void _close_door(coord_def move)
 //
 static void _do_berserk_no_combat_penalty()
 {
-    if (you.berserk_penalty == NO_BERSERK_PENALTY)
-        return;
-
     if (you.berserk())
     {
         you.berserk_penalty++;
@@ -3366,11 +3339,7 @@ static void _move_player(coord_def move)
             you.turn_is_over = true;
             fight_melee(&you, targ_monst);
 
-            // We don't want to create a penalty if there isn't
-            // supposed to be one.
-            if (you.berserk_penalty != NO_BERSERK_PENALTY)
-                you.berserk_penalty = 0;
-
+            you.berserk_penalty = 0;
             attacking = true;
         }
     }
@@ -3380,7 +3349,6 @@ static void _move_player(coord_def move)
         {
             mpr("You're too terrified to move while being watched!");
             stop_running();
-            moving = false;
             you.turn_is_over = false;
             return;
         }

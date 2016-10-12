@@ -2152,68 +2152,35 @@ static tileidx_t _tileidx_armour_base(const item_def &item)
     case ARM_ANIMAL_SKIN:
         return TILE_ARM_ANIMAL_SKIN;
 
-    case ARM_TROLL_HIDE:
-        return TILE_ARM_TROLL_HIDE;
-
     case ARM_TROLL_LEATHER_ARMOUR:
         return TILE_ARM_TROLL_LEATHER_ARMOUR;
-
-    case ARM_FIRE_DRAGON_HIDE:
-        return TILE_ARM_FIRE_DRAGON_HIDE;
 
     case ARM_FIRE_DRAGON_ARMOUR:
         return TILE_ARM_FIRE_DRAGON_ARMOUR;
 
-    case ARM_ICE_DRAGON_HIDE:
-        return TILE_ARM_ICE_DRAGON_HIDE;
-
     case ARM_ICE_DRAGON_ARMOUR:
         return TILE_ARM_ICE_DRAGON_ARMOUR;
-
-    case ARM_STEAM_DRAGON_HIDE:
-        return TILE_ARM_STEAM_DRAGON_HIDE;
 
     case ARM_STEAM_DRAGON_ARMOUR:
         return TILE_ARM_STEAM_DRAGON_ARMOUR;
 
-    case ARM_MOTTLED_DRAGON_HIDE:
-        return TILE_ARM_MOTTLED_DRAGON_HIDE;
-
     case ARM_MOTTLED_DRAGON_ARMOUR:
         return TILE_ARM_MOTTLED_DRAGON_ARMOUR;
-
-    case ARM_QUICKSILVER_DRAGON_HIDE:
-        return TILE_ARM_QUICKSILVER_DRAGON_HIDE;
 
     case ARM_QUICKSILVER_DRAGON_ARMOUR:
         return TILE_ARM_QUICKSILVER_DRAGON_ARMOUR;
 
-    case ARM_STORM_DRAGON_HIDE:
-        return TILE_ARM_STORM_DRAGON_HIDE;
-
     case ARM_STORM_DRAGON_ARMOUR:
         return TILE_ARM_STORM_DRAGON_ARMOUR;
-
-    case ARM_SHADOW_DRAGON_HIDE:
-        return TILE_ARM_SHADOW_DRAGON_HIDE;
 
     case ARM_SHADOW_DRAGON_ARMOUR:
         return TILE_ARM_SHADOW_DRAGON_ARMOUR;
 
-    case ARM_GOLD_DRAGON_HIDE:
-        return TILE_ARM_GOLD_DRAGON_HIDE;
-
     case ARM_GOLD_DRAGON_ARMOUR:
         return TILE_ARM_GOLD_DRAGON_ARMOUR;
 
-    case ARM_PEARL_DRAGON_HIDE:
-        return TILE_ARM_PEARL_DRAGON_HIDE;
-
     case ARM_PEARL_DRAGON_ARMOUR:
         return TILE_ARM_PEARL_DRAGON_ARMOUR;
-
-    case ARM_SWAMP_DRAGON_HIDE:
-        return TILE_ARM_SWAMP_DRAGON_HIDE;
 
     case ARM_SWAMP_DRAGON_ARMOUR:
         return TILE_ARM_SWAMP_DRAGON_ARMOUR;
@@ -3404,8 +3371,6 @@ tileidx_t tileidx_ability(const ability_type ability)
     // Jiyva
     case ABIL_JIYVA_CALL_JELLY:
         return TILEG_ABILITY_JIYVA_REQUEST_JELLY;
-    case ABIL_JIYVA_JELLY_PARALYSE:
-        return TILEG_ABILITY_JIYVA_PARALYSE_JELLY;
     case ABIL_JIYVA_SLIMIFY:
         return TILEG_ABILITY_JIYVA_SLIMIFY;
     case ABIL_JIYVA_CURE_BAD_MUTATION:

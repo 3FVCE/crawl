@@ -1043,8 +1043,8 @@ static string _describe_weapon(const item_def &item, bool verbose)
             }
             break;
         case SPWPN_VAMPIRISM:
-            description += "It inflicts no extra harm, but heals its "
-                "wielder somewhat when it strikes a living foe.";
+            description += "It inflicts no extra harm, but heals "
+                "its wielder when it wounds a living foe.";
             break;
         case SPWPN_PAIN:
             description += "In the hands of one skilled in necromantic "
@@ -1477,12 +1477,7 @@ static string _describe_armour(const item_def &item, bool verbose)
     else
     {
         const int max_ench = armour_max_enchant(item);
-        if (armour_is_hide(item))
-        {
-            description += "\n\nEnchanting it will turn it into a suit of "
-                           "magical armour.";
-        }
-        else if (item.plus < max_ench || !item_ident(item, ISFLAG_KNOW_PLUSES))
+        if (item.plus < max_ench || !item_ident(item, ISFLAG_KNOW_PLUSES))
         {
             description += "\n\nIt can be maximally enchanted to +"
                            + to_string(max_ench) + ".";
@@ -1861,21 +1856,6 @@ string get_item_description(const item_def &item, bool verbose,
         if (item.sub_type == CORPSE_SKELETON)
             break;
 
-        if (mons_class_leaves_hide(item.mon_type))
-        {
-            description << "\n\n";
-            if (item.props.exists(MANGLED_CORPSE_KEY))
-            {
-                description << "This corpse is badly mangled; its hide is "
-                               "beyond any hope of recovery.";
-            }
-            else
-            {
-                description << "Butchering may allow you to recover this "
-                               "creature's hide, which can be enchanted into "
-                               "armour.";
-            }
-        }
         // intentional fall-through
     case OBJ_FOOD:
         if (item.base_type == OBJ_FOOD)
@@ -2852,8 +2832,6 @@ static string _describe_demonspawn_role(monster_type type)
     {
     case MONS_BLOOD_SAINT:
         return "It weaves powerful and unpredictable spells of devastation.";
-    case MONS_CHAOS_CHAMPION:
-        return "It possesses chaotic, reality-warping powers.";
     case MONS_WARMONGER:
         return "It is devoted to combat, disrupting the magic of its foes as "
                "it battles endlessly.";
@@ -2878,8 +2856,6 @@ static string _describe_demonspawn_base(int species)
         return "It is covered in icy armour.";
     case MONS_INFERNAL_DEMONSPAWN:
         return "It gives off an intense heat.";
-    case MONS_PUTRID_DEMONSPAWN:
-        return "It is surrounded by sickly fumes and gases.";
     case MONS_TORTUROUS_DEMONSPAWN:
         return "It menaces with bony spines.";
     }
@@ -2960,7 +2936,7 @@ static const char* _describe_attack_flavour(attack_flavour flavour)
     case AF_FIRE:            return "deal extra fire damage";
     case AF_HUNGER:          return "cause hungering";
     case AF_MUTATE:          return "cause mutations";
-    case AF_PARALYSE:        return "poison and cause paralysis or slowing";
+    case AF_POISON_PARALYSE: return "poison and cause paralysis or slowing";
     case AF_POISON:          return "cause poisoning";
     case AF_POISON_STRONG:   return "cause strong poisoning";
     case AF_ROT:             return "cause rotting";
@@ -3133,10 +3109,7 @@ static void _print_bar(int value, int scale, string name,
  */
 static void _describe_monster_hp(const monster_info& mi, ostringstream &result)
 {
-    const int mhp = mons_is_hepliaklqana_ancestor(mi.type) ?
-                        hepliaklqana_ally_hp() : // not randomized
-                        mons_avg_hp(mi.type);
-    result << "Max HP: about " << mhp << "\n";
+    result << "Max HP: " << mi.get_max_hp_desc() << "\n";
 }
 
 /**
@@ -3527,10 +3500,8 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
     case MONS_MONSTROUS_DEMONSPAWN:
     case MONS_GELID_DEMONSPAWN:
     case MONS_INFERNAL_DEMONSPAWN:
-    case MONS_PUTRID_DEMONSPAWN:
     case MONS_TORTUROUS_DEMONSPAWN:
     case MONS_BLOOD_SAINT:
-    case MONS_CHAOS_CHAMPION:
     case MONS_WARMONGER:
     case MONS_CORRUPTER:
     case MONS_BLACK_SUN:
@@ -3670,9 +3641,9 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
     }
     else if (mons_class_leaves_hide(mi.type))
     {
-        inf.body << "\nIf " << it << " is slain and butchered, it may be "
-                    "possible to recover " << mi.pronoun(PRONOUN_POSSESSIVE)
-                 << " hide, which can be enchanted into armour.\n";
+        inf.body << "\nIf " << it << " is slain, it may be possible to "
+                    "recover " << mi.pronoun(PRONOUN_POSSESSIVE)
+                 << " hide, which can be used as armour.\n";
     }
 
     if (mi.is(MB_SUMMONED_CAPPED))

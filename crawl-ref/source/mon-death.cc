@@ -411,13 +411,55 @@ static void _gold_pile(item_def &corpse, monster_type corpse_class)
         ++you.props[GOZAG_GOLD_AURA_KEY].get_int();
 }
 
+static void _create_monster_hide(const item_def &corpse, bool silent)
+{
+    const armour_type type = hide_for_monster(mons_species(corpse.mon_type));
+    ASSERT(type != NUM_ARMOURS);
+
+    int o = items(false, OBJ_ARMOUR, type, 0);
+    squash_plusses(o);
+
+    if (o == NON_ITEM)
+        return;
+    item_def& item = mitm[o];
+
+    do_uncurse_item(item);
+
+    const coord_def pos = item_pos(corpse);
+    if (pos.origin())
+    {
+        set_ident_flags(item, ISFLAG_IDENT_MASK);
+        return;
+    }
+
+    move_item_to_grid(&o, pos);
+    if (you.see_cell(pos) && !silent)
+    {
+        // XXX: tweak for uniques/named monsters, somehow?
+        mprf("%s %s intact enough to wear.",
+             item.name(DESC_THE).c_str(),
+             mons_genus(corpse.mon_type) == MONS_DRAGON ? "are"  // scales are
+                                                        : "is"); // hide is
+    }
+
+    // after messaging, for better results
+    set_ident_flags(item, ISFLAG_IDENT_MASK);
+}
+
+static void _maybe_drop_monster_hide(const item_def &corpse, bool silent)
+{
+    if (mons_class_leaves_hide(corpse.mon_type) && !one_chance_in(3))
+        _create_monster_hide(corpse, silent);
+}
+
 /**
  * Create this monster's corpse in mitm at its position.
  *
  * @param mons the monster to corpsify
  * @param silent whether to suppress all messages
- * @param force whether to always make a corpse (no goldification and no 50%
- *              chance not to -- being summoned etc. still matters)
+ * @param force whether to always make a corpse (no 50% chance not to make a
+                corpse, no goldification, no hides -- being summoned etc. still
+  *             matters, though)
  * @returns a pointer to an item; it may be null, if the monster can't leave a
  *          corpse or if the 50% chance is rolled; it may be gold, if the player
  *          worships Gozag, or it may be the corpse.
@@ -501,7 +543,7 @@ item_def* place_monster_corpse(const monster& mons, bool silent, bool force)
     if (o == NON_ITEM)
         return nullptr;
 
-    if (you.see_cell(mons.pos()) && !silent)
+    if (you.see_cell(mons.pos()) && !silent && !goldify)
         hints_dissection_reminder();
 
     return &mitm[o];
@@ -2579,7 +2621,7 @@ item_def* monster_die(monster* mons, killer_type killer,
     }
     else if (mons->type == MONS_FLAYED_GHOST)
         end_flayed_effect(mons);
-    // Give the treant a last chance to release its wasps if it is killed in a
+    // Give the treant a last chance to release its hornets if it is killed in a
     // single blow from above half health
     else if (mons->type == MONS_SHAMBLING_MANGROVE && !was_banished
              && !mons->pacified() && (!summoned || duration > 0) && !wizard
@@ -2613,7 +2655,7 @@ item_def* monster_die(monster* mons, killer_type killer,
 
         if (mons->type == MONS_SPRIGGAN_RIDER)
         {
-            daddy_corpse = mounted_kill(mons, MONS_WASP, killer, killer_index);
+            daddy_corpse = mounted_kill(mons, MONS_HORNET, killer, killer_index);
             mons->type = MONS_SPRIGGAN;
         }
         corpse = place_monster_corpse(*mons, silent);
@@ -2698,8 +2740,13 @@ item_def* monster_die(monster* mons, killer_type killer,
         mons->destroy_inventory();
     }
 
-    if (!silent && !wizard && leaves_corpse && corpse)
-        _special_corpse_messaging(*mons);
+    if (leaves_corpse && corpse)
+    {
+        if (!silent && !wizard)
+            _special_corpse_messaging(*mons);
+        // message ordering... :(
+        _maybe_drop_monster_hide(*corpse, silent);
+    }
 
     if (mons->is_divine_companion()
         && killer != KILL_RESET

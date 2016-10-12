@@ -207,8 +207,6 @@ static void _interrupt_vampire_feeding(item_def& corpse, int dur)
         else
             dec_mitm_item_quantity(corpse.index(), 1);
 
-        maybe_drop_monster_hide(old_corpse);
-
         if (mons_genus(old_corpse.mon_type) == MONS_ORC)
             did_god_conduct(DID_DESECRATE_ORCISH_REMAINS, 2);
         if (mons_class_holiness(old_corpse.mon_type) & MH_HOLY)
@@ -605,9 +603,9 @@ void MacroDelay::handle()
     {
         dprf("Expiring macro delay on turn: %d", you.num_turns);
         stop_delay();
-        return;
     }
-    run_macro();
+    else
+        run_macro();
 
     // Macros may not use up turns, but unless we zero time_taken,
     // main.cc will call world_reacts and increase turn count.
@@ -886,8 +884,6 @@ void FeedVampireDelay::finish()
     }
     else
         dec_mitm_item_quantity(corpse.index(), 1);
-
-    maybe_drop_monster_hide(old_corpse);
 
     if (mons_genus(old_corpse.mon_type) == MONS_ORC)
         did_god_conduct(DID_DESECRATE_ORCISH_REMAINS, 2);

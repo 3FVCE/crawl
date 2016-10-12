@@ -1826,35 +1826,6 @@ bool beogh_resurrect()
     return true;
 }
 
-void jiyva_paralyse_jellies()
-{
-    mprf("You call upon nearby slimes to pray to %s.",
-         god_name(you.religion).c_str());
-
-    int jelly_count = 0;
-    for (radius_iterator ri(you.pos(), LOS_DEFAULT); ri; ++ri)
-    {
-        monster* mon = monster_at(*ri);
-        const int dur = 20 + random2(11);
-        if (mon != nullptr && mons_is_slime(*mon) && !mon->is_shapeshifter())
-        {
-            mon->add_ench(mon_enchant(ENCH_PARALYSIS, 0,
-                                      &you, dur * BASELINE_DELAY));
-            jelly_count++;
-        }
-    }
-
-    if (jelly_count > 0)
-    {
-        if (jelly_count > 1)
-            mpr("The nearby slimes join the prayer.");
-        else
-            mpr("A nearby slime joins the prayer.");
-
-        lose_piety(max(5, min(jelly_count, 20)));
-    }
-}
-
 bool jiyva_remove_bad_mutation()
 {
     if (!how_mutated())
@@ -2026,10 +1997,6 @@ bool kiku_receive_corpses(int pow)
         item_def* corpse = place_monster_corpse(dummy, true, true);
         if (!corpse)
             continue;
-
-        // no scumming for hides
-        if (mons_class_leaves_hide(mon_type))
-            corpse->props[MANGLED_CORPSE_KEY] = true;
 
         // Higher piety means fresher corpses.
         int rottedness = 200 -
@@ -5343,9 +5310,6 @@ static int _piety_for_skill_by_sacrifice(ability_type sacrifice)
     piety_gain += _piety_for_skill(sac_def.sacrifice_skill);
     if (sacrifice == ABIL_RU_SACRIFICE_HAND)
     {
-        // No one-handed polearms for spriggans.
-        if (you.species == SP_SPRIGGAN)
-            piety_gain += _piety_for_skill(SK_POLEARMS);
         // No one-handed staves for small races.
         if (species_size(you.species, PSIZE_TORSO) <= SIZE_SMALL)
             piety_gain += _piety_for_skill(SK_STAVES);

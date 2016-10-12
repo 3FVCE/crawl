@@ -21,7 +21,7 @@ function grandhive_vaults(e, hivewallglyph)
     e.colour(hivewallglyph .. ' = yellow')
     -- Lair has lots of randomization and thin scaling in its
     -- monster set, so specify some monsters for Lair. Also,
-    -- avoid wasps and bears, because nature or whatever.
+    -- avoid hornets and bears, because nature or whatever.
     if you.branch() == "Lair" then
         e.kmons('0 = yak / hippogriff / wolf w:8 / \
                      water moccasin w:8 / wyvern w:8 / basilisk w:8 / \
@@ -2140,7 +2140,7 @@ KMONS:   8 = bone dragon / reaper / doom hound
 KMONS:   _ = tzitzimitl
 ITEM:    robe_of_night, ring_of_shadows
 ITEM:    cloak_of_the_thief, boots_of_the_assassin
-ITEM:    shadow dragon armour randart, ring of stealth randart
+ITEM:    shadow dragon scales randart, ring of stealth randart
 ITEM:    phantom mirror, potion of invisibility ident:type q:2
 KFEAT:   F = floor
 KFEAT:   _ = altar_dithmenos
@@ -2240,4 +2240,23 @@ xxxxxxwwwxxxxxxxxxx
 xxxxxxxwwwxxxxxxxxx
 xxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+NAME:    doesnt_quadruple_sword
+TAGS:    no_monster_gen no_item_gen
+DEPTH:   D:13-
+ORIENT:  north
+MONS:    dancing weapon ; long sword
+ITEM:    double sword, triple sword
+KPROP:   .* = bloody
+NSUBST:  . = 4:1 / 2=1.. / 1:d / 1:e / 1:f / 4=ff.
+SUBST:   c : cbxv
+: dgn.delayed_decay(_G, 'f', 'wizard corpse')
+MAP
+cccccccccc
+c.**..**.c
+c........c
+c........c
+c........c
+cccc==cccc
 ENDMAP
