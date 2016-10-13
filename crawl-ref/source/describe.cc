@@ -16,6 +16,7 @@
 #include <string>
 
 #include "adjust.h"
+#include "areas.h"
 #include "art-enum.h"
 #include "artefact.h"
 #include "branch.h"
@@ -2095,9 +2096,28 @@ void get_feature_desc(const coord_def &pos, describe_info &inf)
 
     // mention the ability to pray at altars
     if (feat_is_altar(feat))
-        long_desc += "\n(Pray here to learn more.)\n";
+    {
+        long_desc +=
+            make_stringf("\n(Pray here with '%s' to learn more.)\n",
+                         command_to_string(CMD_GO_DOWNSTAIRS).c_str());
+    }
 
     inf.body << long_desc;
+
+    if (!feat_is_solid(feat))
+    {
+        string area_desc = "";
+        if (haloed(pos) && !umbraed(pos))
+            area_desc += "\n" + getLongDescription("haloed");
+        if (umbraed(pos) && !haloed(pos))
+            area_desc += "\n" + getLongDescription("umbraed");
+        if (liquefied(pos))
+            area_desc += "\n" + getLongDescription("liquefied");
+        if (disjunction_haloed(pos))
+            area_desc += "\n" + getLongDescription("disjunction haloed");
+
+        inf.body << area_desc;
+    }
 
     if (const cloud_type cloud = env.map_knowledge(pos).cloud())
     {
